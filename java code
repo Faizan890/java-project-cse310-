@@ -1,0 +1,102 @@
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
+
+public class EmergencyServiceSystem {
+    private List<EmergencyCall> calls;
+    private Scanner scanner;
+
+    public EmergencyServiceSystem() {
+        this.calls = new ArrayList<EmergencyCall>();
+        this.scanner = new Scanner(System.in);
+    }
+
+    public void run() {
+        while (true) {
+            System.out.println("1. Record an emergency call");
+            System.out.println("2. View calls for a service");
+            System.out.println("3. Remove a call from the list");
+            System.out.println("4. Exit");
+            System.out.print("Enter your choice: ");
+
+            String input = scanner.nextLine();
+            switch (input) {
+                case "1":
+                    recordEmergencyCall();
+                    break;
+                case "2":
+                    viewCallsForService();
+                    break;
+                case "3":
+                    removeCall();
+                    break;
+                case "4":
+                    scanner.close();
+                    System.out.println("Goodbye!");
+                    return;
+                default:
+                    System.out.println("Invalid choice.");
+            }
+        }
+    }
+
+    private void recordEmergencyCall() {
+        System.out.println("Enter caller name: ");
+        String name = scanner.nextLine();
+        System.out.println("Enter caller phone number: ");
+        String phone = scanner.nextLine();
+        System.out.println("Enter brief description of the emergency: ");
+        String description = scanner.nextLine();
+        System.out.println("Enter required service (fire, police, ambulance, or multiple services separated by commas): ");
+        String servicesStr = scanner.nextLine();
+        String[] servicesArr = servicesStr.split(",");
+        List<Service> services = new ArrayList<Service>();
+        for (String serviceStr : servicesArr) {
+            services.add(Service.valueOf(serviceStr.trim().toUpperCase()));
+        }
+        EmergencyCall call = new EmergencyCall(name, phone, description, services);
+        calls.add(call);
+        System.out.println("Call recorded.");
+    }
+
+    private void viewCallsForService() {
+        System.out.println("Enter service (fire, police, ambulance): ");
+        String serviceStr = scanner.nextLine().toUpperCase();
+        Service service = Service.valueOf(serviceStr);
+        List<EmergencyCall> callsForService = getCallsForService(service);
+        System.out.println("Calls for " + service + " service:");
+        if (callsForService.isEmpty()) {
+            System.out.println("No calls found.");
+        } else {
+            for (EmergencyCall call : callsForService) {
+                System.out.println(call);
+            }
+        }
+    }
+
+    private void removeCall() {
+        System.out.println("Enter caller name: ");
+        String name = scanner.nextLine();
+        System.out.println("Enter caller phone number: ");
+        String phone = scanner.nextLine();
+        List<EmergencyCall> callsToRemove = new ArrayList<EmergencyCall>();
+        for (EmergencyCall call : calls) {
+            if (call.getName().equals(name) && call.getPhone().equals(phone)) {
+                callsToRemove.add(call);
+            }
+        }
+        if (callsToRemove.isEmpty()) {
+            System.out.println("No matching call found.");
+        } else if (callsToRemove.size() == 1) {
+            calls.remove(callsToRemove.get(0));
+            System.out.println("Call removed.");
+        } else {
+            System.out.println("Multiple calls found. Select one to remove:");
+            for (int i = 0; i < callsToRemove.size(); i++) {
+                System.out.println((i+1) + ". " + callsToRemove.get(i));
+            }
+            int index = Integer.parseInt(scanner.nextLine()) - 1;
+            calls.remove(callsToRemove.get(index));
+            System.out.println("Call removed.");
+        }
+   
