@@ -1,0 +1,142 @@
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
+import java.io.FileWriter;
+//import java.io.File;
+
+
+// Importing the IOException class for handling errors  
+import java.io.IOException;
+
+public class EmergencyServiceSystem {
+
+    public static void main(String[] args) {
+        List<EmergencyCall> calls = new ArrayList<EmergencyCall>();
+        Scanner scanner = new Scanner(System.in);
+        
+        while (true) {
+            System.out.println("Enter caller name: ");
+            String name = scanner.nextLine();
+            System.out.println("Enter caller phone number: ");
+            String phone = scanner.nextLine();
+            System.out.println("Enter brief description of the emergency: ");
+            String description = scanner.nextLine();
+            System.out.println("Enter required service (fire, police, ambulance, or multiple services separated by commas): ");
+            try {  
+                // Creating an object of a file  
+                FileWriter f0 = new FileWriter("D:FileOperationExamp2.txt");   
+               
+                f0.write(name+ " "+phone+ " "+" "+description);
+                f0.flush();
+                f0.close();
+        
+         
+                
+               
+         
+         
+              } 
+              catch (IOException exception) {  
+                       System.out.println("An unexpected error is occurred.");  
+                       exception.printStackTrace();  
+           }
+           /////////////////////
+          
+            
+            String servicesStr = scanner.nextLine();
+            String[] servicesArr = servicesStr.split(",");
+            List<Service> services = new ArrayList<Service>();
+            for (String serviceStr : servicesArr) {
+                services.add(Service.valueOf(serviceStr.trim().toUpperCase()));
+            }
+            EmergencyCall call = new EmergencyCall(name, phone, description, services);
+            calls.add(call);
+            System.out.println("Call recorded. Enter 'y' to record another call or any other key to exit: ");
+            String input = scanner.nextLine();
+            if (!input.equalsIgnoreCase("y")) {
+                break;
+            }
+        }
+        
+        System.out.println("Calls for fire service: ");
+        List<EmergencyCall> fireCalls = getEmergencyCallsByService(calls, Service.FIRE);
+        printEmergencyCalls(fireCalls);
+        
+        System.out.println("Calls for police service: ");
+        List<EmergencyCall> policeCalls = getEmergencyCallsByService(calls, Service.POLICE);
+        printEmergencyCalls(policeCalls);
+        
+        System.out.println("Calls for ambulance service: ");
+        List<EmergencyCall> ambulanceCalls = getEmergencyCallsByService(calls, Service.AMBULANCE);
+        printEmergencyCalls(ambulanceCalls);
+        
+        scanner.close();
+    }
+    
+    private static List<EmergencyCall> getEmergencyCallsByService(List<EmergencyCall> calls, Service service) {
+        List<EmergencyCall> filteredCalls = new ArrayList<EmergencyCall>();
+        for (EmergencyCall call : calls) {
+            if (call.getServices().contains(service)) {
+                filteredCalls.add(call);
+            }
+        }
+        return filteredCalls;
+    }
+    
+    private static void printEmergencyCalls(List<EmergencyCall> calls) {
+        for (EmergencyCall call : calls) {
+            System.out.println(call);
+        }
+    }
+
+}
+
+enum Service {
+    FIRE, POLICE, AMBULANCE
+}
+
+class EmergencyCall {
+    private String name;
+    private String phone;
+    private String description;
+    private List<Service> services;
+    
+    public EmergencyCall(String name, String phone, String description, List<Service> services) {
+        this.name = name;
+        this.phone = phone;
+        this.description = description;
+        this.services = services;
+    }
+
+    public String getName() 
+    {
+        return name;
+    }
+
+    public String getPhone()
+     {
+        return phone;
+    }
+
+    public String getDescription() 
+    {
+        return description;
+    }
+
+    public List<Service> getServices()
+    {
+        return services;
+    }
+    
+
+    @Override
+    public String toString() 
+    {
+
+      
+        return "Caller Name: " + name + ", Phone: " + phone + ", Description: " + description + ", Services: " + services;
+        // Creating an object of a file  
+        
+        
+    }
+}
